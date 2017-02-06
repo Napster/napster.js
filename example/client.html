@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>napster.js Sample App</title>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="napster.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var API_KEY = 'API_KEY';
+
+      function refresh(callback) {
+        $.ajax({
+          url: '/reauthorize',
+          method: 'GET',
+          data: { refreshToken: Napster.member.refreshToken },
+          success: function(data) {
+            Napster.member.set({
+              accessToken: data.access_token,
+              refreshToken: data.refresh_token
+            });
+
+            if (callback) {
+              callback(data);
+            }
+          }
+        });
+      }
+
+      function getParameters() {
+        var query = window.location.search.substring(1);
+        var parameters = {};
+
+        if (query) {
+          query.split('&').forEach(function(item) {
+            var param = item.split('=');
+            parameters[param[0]] = param[1];
+          });
+        }
+
+        return parameters;
+      }
+
+      $(document).ready(function() {
+        var currentTrack;
+        Napster.init({ consumerKey: API_KEY });
+
+        Napster.player.on('ready', function(e) {
+          var params = getParameters();
+          if (params.accessToken) {
+            Napster.member.set(params);
+          }
+
+          Napster.api.get(false, '/tracks/top', function(data) {
+            var tracks = data.tracks;
+            tracks.forEach(function(track, i) {
+              var $t = $('<div class="track" data-track="' + track.id + '">' +
+                           '<div class="album-art"></div>' +
+                           '<div class="track-info">' +
+                             '<div class="progress-bar"></div>' +
+                             '<div class="name">' + track.name + '</div>' +
+                             '<div class="artist">' + track.artistName + '</div>' +
+                             '<div class="duration">' + Napster.util.secondsToTime(track.playbackSeconds) + '</div>' +
+                             '<div class="current-time">' + Napster.util.secondsToTime(track.playbackSeconds) + '</div>' +
+                           '</div>' +
+                          '</div>');
+
+              $t.click(function() {
+                var id = track.id;
+
+                if (Napster.player.currentTrack === id) {
+                  Napster.player.playing ? Napster.player.pause() : Napster.player.play(id);
+                }
+                else {
+                  $('[data-track="' + id + '"] .progress-bar').width(0);
+                  $('[data-track="' + id + '"] .current-time').html($('[data-track="' + id + '"] .duration').html());
+
+                  Napster.player.play(id);
+                }
+              });
+
+              $t.appendTo('#tracks');
+
+              Napster.api.get(false, '/albums/' + track.albumId + '/images', function(data) {
+                var images = data.images;
+                $('[data-track="' + track.id + '"] .album-art')
+                  .append($('<img>', { src: images[0].url }));
+              });
+            });
+          });
+        });
+
+        Napster.player.on('playevent', function(e) {
+          var playing = e.data.playing;
+          var paused = e.data.paused;
+          var currentTrack = e.data.id;
+
+          $('[data-track]').removeClass('playing paused');
+          $('[data-track="' + currentTrack + '"]').toggleClass('playing', playing).toggleClass('paused', paused);
+        });
+
+        Napster.player.on('playtimer', function(e) {
+          var id = currentTrack;
+          var current = e.data.currentTime;
+          var total = e.data.totalTime;
+          var width = $("[data-track='" + id + "'] .track-info").width();
+
+          $("[data-track='" + id + "']").addClass("playing");
+          $("[data-track='" + id + "'] .progress-bar").width(parseInt((current / total) * width).toString() + "px");
+          $("[data-track='" + id + "'] .current-time").html(Napster.util.secondsToTime(total - current));
+        });
+
+        Napster.player.on('error', console.log);
+      });
+    </script>
+    <style type="text/css">
+      body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+      }
+
+      .header {
+        padding: 25px;
+      }
+
+      .header-text {
+        font-weight: 100;
+        font-size: 50px;
+        color: #31404d;
+      }
+
+      .user {
+        font-weight: 200;
+        font-size: 20px;
+      }
+
+      .tracks {
+        width: 100%;
+        max-width: 700px;
+        display: table;
+        border-collapse: collapse;
+      }
+
+      .track {
+        overflow: hidden;
+        display: table-row;
+        height: 130px;
+        width: 100%;
+      }
+
+      .track img {
+        display: block;
+        height: 130px;
+        width: 130px;
+      }
+
+      .album-art {
+        width: 130px;
+        height: 130px;
+      }
+
+      .track-info {
+        position: relative;
+        vertical-align: top;
+        font-weight: 200;
+        height: 100%;
+        width: 100%;
+      }
+
+      .album-art, .track-info {
+        display: table-cell;
+        border-top: 5px solid white;
+      }
+
+      .track:hover {
+        background-color: rgba(230, 230, 237, 0.6);
+      }
+
+      .progress-bar {
+        background-color: #7fc8ea;
+        z-index: 1;
+        position: absolute;
+        display: none;
+        height: 130px;
+        top: 0;
+        left: 0;
+        width: 0;
+      }
+
+      .playing .progress-bar, .paused .progress-bar {
+        display: block;
+      }
+
+      .artist, .name {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .name {
+        font-size: 25px;
+        margin-top: 10px;
+        color: #45565E;
+      }
+
+      .artist { top: 42px; }
+
+      .artist, .duration, .current-time {
+        font-size: 19px;
+        color: #31404d;
+      }
+
+      .name, .artist, .duration, .current-time {
+        position: absolute;
+        left: 25px;
+        z-index: 2;
+      }
+
+      .duration, .current-time {
+        bottom: 10px;
+        font-weight: 300;
+      }
+
+      .current-time {
+        display: none;
+      }
+
+      .playing .duration,
+      .paused .duration {
+        display: none;
+      }
+
+      .playing .current-time,
+      .paused .current-time {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-text">napster.js Sample App<span class="user"></span></div>
+    </div>
+    <div id="tracks"></div>
+  </body>
+</html>

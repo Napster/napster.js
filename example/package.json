@@ -1,0 +1,9 @@
+{
+  "name": "@napster/napster-sdk-sample-app",
+  "version": "1.0.1",
+  "dependencies": {
+    "body-parser": "^1.12.2",
+    "express": "^4.12.3",
+    "request": "^2.54.0"
+  }
+}
