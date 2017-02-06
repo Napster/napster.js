@@ -1,6 +1,6 @@
 {
   "name": "napster.js",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A client side JavaScript library for managing playback of licensed Napster audio content.",
   "main": "gulpfile.js",
   "directories": {
@@ -32,5 +32,6 @@
   "bugs": {
     "url": "https://github.com/Napster/napster.js/issues"
   },
-  "homepage": "https://github.com/Napster/napster.js"
+  "homepage": "https://github.com/Napster/napster.js",
+  "license": "MIT"
 }
