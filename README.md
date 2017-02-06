@@ -1,0 +1,3 @@
+# napster.js
+
+Coming soon...
