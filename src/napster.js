@@ -79,7 +79,7 @@
             .attr('name', id)
             .attr('src', 'http://api.napster.com/v1.1/player/index.html?apikey=' + options.consumerKey)
             .attr('frameborder', 'no')
-            .attr('style', 'display:none;')
+            .attr('style', 'height:0;width:0;')
             .appendTo($(document.body))
             .get(0)
             .addEventListener('load', function() {
