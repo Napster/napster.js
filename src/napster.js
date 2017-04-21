@@ -74,18 +74,17 @@
         var that = this, d = $('#' + id);
 
         if (d.length === 0) {
-          $(function() {
-            var f = $('<iframe></iframe>')
-              .attr('id', id)
-              .attr('name', id)
-              .attr('src', 'http://api.napster.com/v1.1/player/index.html?apikey=' + options.consumerKey)
-              .attr('frameborder', 'no')
-              .attr('style', 'display:none;')
-              .appendTo($(document.body))
-              .load(function() {
-                that.player.win = f.get(0);
-              });
-          });
+          $('<iframe></iframe>')
+            .attr('id', id)
+            .attr('name', id)
+            .attr('src', 'http://api.napster.com/v1.1/player/index.html?apikey=' + options.consumerKey)
+            .attr('frameborder', 'no')
+            .attr('style', 'height:0;width:0;')
+            .appendTo($(document.body))
+            .get(0)
+            .addEventListener('load', function() {
+              that.player.win = this;
+            });
         }
         else if (d.get(0) instanceof HTMLIFrameElement) {
           that.player.win = d.get(0);
