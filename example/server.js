@@ -17,7 +17,7 @@ app.use(express.static(__dirname + '/../'));
 app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
-  var path = 'https://api.napster.com/oauth/authorize?' + querystring.stringify({
+  var path = 'https://api.rhapsody.com/oauth/authorize?' + querystring.stringify({
     response_type: 'code',
     client_id: apiKey,
     redirect_uri: redirectUri
@@ -28,7 +28,7 @@ app.get('/', function(request, response) {
 
 app.get('/authorize', function(clientRequest, clientResponse) {
   request.post({
-    url: 'https://api.napster.com/oauth/access_token',
+    url: 'https://api.rhapsody.com/oauth/access_token',
     form: {
       client_id: apiKey,
       client_secret: apiSecret,
@@ -55,7 +55,7 @@ app.get('/reauthorize', function(clientRequest, clientResponse) {
   }
 
   request.post({
-    url: 'https://api.napster.com/oauth/access_token',
+    url: 'https://api.rhapsody.com/oauth/access_token',
     form: {
       client_id: apiKey,
       client_secret: apiSecret,
