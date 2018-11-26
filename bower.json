@@ -1,24 +1,37 @@
 {
   "name": "napster.js",
-  "version": "1.1.0",
-  "main": "napster.js",
-  "homepage": "https://developer.napster.com",
-  "authors": [
-    "Napster API Team <napsterapi@googlegroups.com>"
-  ],
+  "version": "2.0.0",
   "description": "A client side JavaScript library for managing playback of licensed Napster audio content.",
-  "moduleType": [
-    "globals"
+  "main": "gulpfile.js",
+  "directories": {
+    "example": "example",
+    "test": "test",
+    "source": "src"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.8.6",
+    "gulp-uglifyjs": "^0.4.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rhapsody/internal-napster.js.git"
+  },
+  "author": "Rhapsody International, Inc.",
+  "contributors": [
+    {
+      "name": "Daniel Duda"
+    },
+    {
+      "name": "Christian Nunciato"
+    }
   ],
-  "keywords": [
-    "napster",
-    "napster.js"
-  ],
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "src"
-  ]
+  "bugs": {
+    "url": "https://github.com/Rhapsody/internal-napster.js/issues"
+  },
+  "homepage": "https://github.com/Rhapsody/internal-napster.js",
+  "license": "MIT"
 }

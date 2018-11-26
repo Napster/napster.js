@@ -3,9 +3,9 @@
   <head>
     <title>napster.js Sample App</title>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="napster.js" type="text/javascript"></script>
+    <script src="napster.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-      var API_KEY = 'API_KEY';
+    var API_KEY = 'API_KEY';
 
       function refresh(callback) {
         $.ajax({
@@ -41,9 +41,12 @@
 
       $(document).ready(function() {
         var currentTrack;
-        Napster.init({ consumerKey: API_KEY });
+        Napster.init({ consumerKey: API_KEY, isHTML5Compatible: true });
 
         Napster.player.on('ready', function(e) {
+          // Uncomment to know when The Napster Player is ready
+          // console.log('initialized');
+
           var params = getParameters();
           if (params.accessToken) {
             Napster.member.set(params);
@@ -51,6 +54,7 @@
 
           Napster.api.get(false, '/tracks/top', function(data) {
             var tracks = data.tracks;
+            Napster.player.clearQueue();
             tracks.forEach(function(track, i) {
               var $t = $('<div class="track" data-track="' + track.id + '">' +
                            '<div class="album-art"></div>' +
@@ -64,10 +68,10 @@
                           '</div>');
 
               $t.click(function() {
-                var id = track.id;
-
+                var id = track.id.charAt(0).toUpperCase() + track.id.slice(1);
+                //TODO: make everything downcase this is a hack so i can debug my queue stuff
                 if (Napster.player.currentTrack === id) {
-                  Napster.player.playing ? Napster.player.pause() : Napster.player.play(id);
+                  Napster.player.playing ? Napster.player.pause() : Napster.player.resume(id);
                 }
                 else {
                   $('[data-track="' + id + '"] .progress-bar').width(0);
@@ -78,6 +82,7 @@
               });
 
               $t.appendTo('#tracks');
+              Napster.player.queue(track.id.charAt(0).toUpperCase() + track.id.slice(1));
 
               Napster.api.get(false, '/albums/' + track.albumId + '/images', function(data) {
                 var images = data.images;
@@ -88,6 +93,27 @@
           });
         });
 
+        $( "#next" ).click(function() {
+          Napster.player.next();
+        });
+        $( "#previous" ).click(function() {
+          Napster.player.previous();
+        });
+        $( "#clear" ).click(function() {
+          Napster.player.clearQueue();
+        });
+        $( "#repeat" ).click(function() {
+          Napster.player.toggleRepeat();
+        });
+        $( "#shuffle" ).click(function() {
+          Napster.player.toggleShuffle();
+        });
+        $( "#pause" ).click(function() {
+          Napster.player.pause();
+        });
+        $( "#resume" ).click(function() {
+          Napster.player.resume();
+        });
         Napster.player.on('playevent', function(e) {
           var playing = e.data.playing;
           var paused = e.data.paused;
@@ -230,12 +256,25 @@
       .paused .current-time {
         display: block;
       }
+      #napster-streaming-player {
+        margin-bottom: 900px;
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div class="header">
+      <video id='napster-streaming-player' class='video-js'></video>
       <div class="header-text">napster.js Sample App<span class="user"></span></div>
     </div>
+    <button id="next">Next</button>
+    <button id="previous">Previous</button>
+    <button id="clear">Clear</button>
+    <button id="repeat">Repeat</button>
+    <button id="shuffle">Shuffle</button>
+    <button id="pause">Pause</button>
+    <button id="resume">Resume</button>
     <div id="tracks"></div>
+
   </body>
 </html>

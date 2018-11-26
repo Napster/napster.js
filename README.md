@@ -1,7 +1,8 @@
 # napster.js
 
 ## Getting Started
-Include the `napster.js` source in your application after the dependent jQuery library. Once the source is loaded, the library must be initialized with an application key.
+This SDK has been deprecated in favor of the new and improved [napster.js](https://github.com/Napster/napster.js) SDK. This SDK is now for internal use only and should be merged into the public repo for any changes to be made public.
+
 
 ```javascript
 Napster.init({
@@ -13,7 +14,7 @@ Napster.init({
 | Attribute      | Default        | Description   |
 | -------------- | -------------- | ------------- |
 | consumerKey    | undefined      | The application key |
-| version        | 'v2.1'           | API endpoint version. Please refer to [developer.napster.com](developer.napster.com) for available versions. |
+| version        | 'v2.2'           | API endpoint version. Please refer to [developer.napster.com](developer.napster.com) for available versions. |
 | catalog        | 'EN'           | The desired catalog locale |
 | player         | 'player-frame' | The html element id where the player iframe will be embedded |
 
@@ -119,7 +120,7 @@ This SDK is released under the MID License:
 The MIT License (MIT)
 ---------------------------------
 
-*Copyright &copy; 2017 Napster / Rhapsody International*
+*Copyright &copy; 2018 Napster / Rhapsody International*
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
