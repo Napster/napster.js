@@ -28,7 +28,29 @@ Html5Player.prototype.auth = function auth() {
       that.streamingPlayer.play(that.currentTrack, 'UNKNOWN');
     }
   });
+  this.streamingPlayer.callbackHandler('trackProgress', function() {
+    window.parent.postMessage({ type: 'playtimer', data: {
+      id: that.currentTrack,
+      code: 'trackProgress',
+      currentTime: that.streamingPlayer.currentTime(),
+      totalTime: that.streamingPlayer.track.duration
+    } }, "*");
+  });
+  this.streamingPlayer.callbackHandler('sessionExpired', function() {
+    window.parent.postMessage({ type: 'playsessionexpired', data: {
+      id: that.currentTrack,
+      code: 'sessionExpired'
+    } }, "*");
+  });
+
+  this.streamingPlayer.callbackHandler('trackLoaded', function() {
+    window.parent.postMessage({ type: 'ready', data: {
+      id: that.currentTrack,
+      code: 'trackLoaded'
+    } }, "*");
+  });
 };
+
 
 Html5Player.prototype.play = function play(o){
   this.streamingPlayer.play(o, { context: 'UNKNOWN'});
