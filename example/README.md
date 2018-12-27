@@ -2,7 +2,7 @@
 
 ### Getting Started
 
-First add the following callback url to the application setting on [developer.rhapsody.com](https://developer.rhapsody.com)
+First add your callback url to the application setting on [developer.rhapsody.com](https://developer.rhapsody.com)
 
 ```
 http://localhost:2000/authorize
