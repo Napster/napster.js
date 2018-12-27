@@ -25,5 +25,3 @@ node server.js
 ```
 
 That's it! Once the server application is running you can navigate in the browser to [localhost:2000](http://localhost:2000).
-
-NOTE: Make sure Flash is supported in your browser.
