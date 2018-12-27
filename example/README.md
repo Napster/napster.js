@@ -1,4 +1,4 @@
-# jook.me (rhapsody.js example app)
+ Example app
 
 ### Getting Started
 
