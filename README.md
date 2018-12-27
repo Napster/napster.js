@@ -1,8 +1,6 @@
 # napster.js
 
 ## Getting Started
-This SDK has been deprecated in favor of the new and improved [napster.js](https://github.com/Napster/napster.js) SDK. This SDK is now for internal use only and should be merged into the public repo for any changes to be made public.
-
 
 ```javascript
 Napster.init({
