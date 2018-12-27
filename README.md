@@ -2,6 +2,9 @@
 
 ## Getting Started
 
+Include the `napster.min.js` source in your application after the dependent jQuery library. Once the source is loaded, the library must be initialized with an application key.
+
+
 ```javascript
 Napster.init({
   consumerKey: 'foo'
