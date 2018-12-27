@@ -79,7 +79,7 @@ Napster.api.get(false, '/tracks/top', function(data) {
 There are a number of interesting playback-related events you can listen for:
 
 * playevent: Starts, pauses, completes, etc.
-* playtimer: Current time, total time, waveform data
+* playtimer: Current time, total time
 * error: Bad things
 * metadata
 * ready
