@@ -51,6 +51,11 @@ Napster.player.play('Tra.5156528');
 Napster.player.pause();
 ```
 
+#### Resuming a paused track
+```javascript
+Napster.player.resume();
+```
+
 #### Seek
 For example, to seek to 0:10 in a given track:
 
