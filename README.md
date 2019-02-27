@@ -7,7 +7,9 @@ Include the `napster.min.js` source in your application after the dependent jQue
 
 ```javascript
 Napster.init({
-  consumerKey: 'foo'
+  consumerKey: 'api_key', // application key of your application
+  isHTML5Compatible: true // (boolean) true if browser supports HTML5 player
+                          // false, flash player will be used instead)
 });
 ```
 
