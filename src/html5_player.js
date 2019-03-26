@@ -44,7 +44,7 @@ Html5Player.prototype.auth = function auth() {
   });
 
   this.streamingPlayer.callbackHandler('trackLoaded', function() {
-    window.parent.postMessage({ type: 'ready', data: {
+    window.parent.postMessage({ type: 'trackLoaded', data: {
       id: that.currentTrack,
       code: 'trackLoaded'
     } }, "*");
