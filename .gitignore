@@ -4,3 +4,5 @@ node_modules
 .idea/
 difflist
 example/napster.js
+
+example/package-lock\.json
