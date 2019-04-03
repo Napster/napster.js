@@ -102,7 +102,7 @@
           player = 'HTML5_PLAYER';
 
           that.player = new Html5Player();
-          $("<video id='napster-streaming-player' class='video-js'></video>").appendTo($(document.body));
+          $("<video-js id='napster-streaming-player' class='video-js' playsinline></video-js>").appendTo($(document.body));
           $("#napster-streaming-player").css("display","none");
           $.ajax({
             url: 'https://api.napster.com/v2/streaming-player.js',

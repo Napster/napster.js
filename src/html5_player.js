@@ -14,7 +14,6 @@ Html5Player.prototype.auth = function auth() {
     id: 'napster-streaming-player',
     apikey: API_KEY,
     token: Napster.member.accessToken,
-    enableLogging: true,
     bitrate: 192,
     downgrade: true,
     currentUser: {},
@@ -44,7 +43,7 @@ Html5Player.prototype.auth = function auth() {
   });
 
   this.streamingPlayer.callbackHandler('trackLoaded', function() {
-    window.parent.postMessage({ type: 'ready', data: {
+    window.parent.postMessage({ type: 'trackLoaded', data: {
       id: that.currentTrack,
       code: 'trackLoaded'
     } }, "*");
