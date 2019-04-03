@@ -14,7 +14,6 @@ Html5Player.prototype.auth = function auth() {
     id: 'napster-streaming-player',
     apikey: API_KEY,
     token: Napster.member.accessToken,
-    enableLogging: true,
     bitrate: 192,
     downgrade: true,
     currentUser: {},
