@@ -67,12 +67,14 @@ Html5Player.prototype.resume = function resume() {
 };
 
 Html5Player.prototype.next = function next() {
+  this.pause();
   if (this.queued.length >= 1) {
     // only do something if there are songs left in the queue
     this.play(this.queued.pop());
   }
 };
 Html5Player.prototype.previous = function previous() {
+    this.pause();
     if (this.played.length === 1) {
       // when there are no songs left, the previous button will just restart the current track, and not do queue manipulation.
       this.streamingPlayer.play(this.played[0], { context: 'UNKNOWN'});
