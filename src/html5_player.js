@@ -36,10 +36,12 @@ Html5Player.prototype.auth = function auth() {
     } }, "*");
   });
   this.streamingPlayer.callbackHandler('sessionExpired', function() {
-    window.parent.postMessage({ type: 'playsessionexpired', data: {
-      id: that.currentTrack,
-      code: 'sessionExpired'
-    } }, "*");
+    window.parent.postMessage({
+      type: 'playsessionexpired', data: {
+        id: that.currentTrack,
+        code: 'sessionExpired'
+      }
+    }, "*");
   });
 
   this.streamingPlayer.callbackHandler('trackLoaded', function() {
@@ -54,6 +56,7 @@ Html5Player.prototype.auth = function auth() {
 Html5Player.prototype.play = function play(o){
   this.streamingPlayer.play(o, { context: 'UNKNOWN'});
   this.played.push(o)
+  this.currentTrack = o;
   window.parent.postMessage({ type: 'playevent', data: { id: o, code: 'PlayStarted', playing: true } }, "*")
 };
 Html5Player.prototype.pause = function pause() {
@@ -150,6 +153,7 @@ Html5Player.prototype.on = function on(eventName, callback){
         p.paused = m.data.data.paused = paused;
         p.currentTrack = (p.playing || p.paused) ? m.data.data.id : null;
       }
+
       callback.call(this, m.data);
     }
   });
