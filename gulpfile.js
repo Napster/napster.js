@@ -11,7 +11,7 @@ gulp.task('default', function() {
 gulp.task('build', function() {
   gulp.src(source)
       .pipe(include())
-        .on('error', console.log)
+      .on('error', console.log)
       .pipe(uglify('napster.min.js'))
       .pipe(gulp.dest('.'));
 });
