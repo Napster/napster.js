@@ -91,6 +91,19 @@
         // Logic should be written as follows. If in IE, return false
         // If mobile, chrome, firefox, safari, return true
       }
+      function checkRequirements() {
+        if (!navigator.cookieEnabled) {
+          return false;
+        }
+        try {
+          if (typeof localStorage === 'undefined') {
+            return false;
+          }
+        } catch(error) {
+          return false;
+        }
+        return true;
+      }
 
       var id = options.player || 'player-frame';
 
@@ -100,6 +113,10 @@
         if (shouldLoadHTML5Engine()) {
           //Load HTML5 playback engine
           player = 'HTML5_PLAYER';
+
+          if (!checkRequirements()) {
+            throw new Error('Cookies or localStorage is not enabled. Napster.js will not work properly without it.')
+          }
 
           that.player = new Html5Player();
           $("<video-js id='napster-streaming-player' class='video-js' playsinline></video-js>").appendTo($(document.body));
@@ -210,12 +227,16 @@
       }
     };
 
-    Napster.member =  new function() {
-      var m = new Member({
-        accessToken: exports.localStorage[ACCESS_TOKEN_KEY],
-        refreshToken: exports.localStorage[REFRESH_TOKEN_KEY]
-      });
-
+    Napster.member = new function() {
+      var m = {};
+      try {
+        m = new Member({
+          accessToken: exports.localStorage[ACCESS_TOKEN_KEY],
+          refreshToken: exports.localStorage[REFRESH_TOKEN_KEY]
+        });
+      } catch(error) {
+        throw new Error('Cookies or localStorage is not enabled. Napster.js will not work properly without it.');
+      }
       return m;
     };
     Napster.previewer = {
@@ -231,7 +252,6 @@
         post: function(method, args) {
           if (!win) {
             throw new Error('An iframe was not found at that reference.');
-            return;
           }
           win.contentWindow.postMessage({ method: method, args: Napster.util.jsonClean(args || {}) }, "*");
         }

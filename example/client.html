@@ -40,6 +40,10 @@
       }
 
       $(document).ready(function() {
+        if (typeof Napster === 'undefined') {
+          $('body').html("There has been an error while loading Napster.js. Please check the console for errors.")
+          return;
+        }
         var currentTrack;
         Napster.init({ consumerKey: API_KEY, isHTML5Compatible: true });
 
