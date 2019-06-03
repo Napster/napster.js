@@ -3,8 +3,8 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var querystring = require('querystring');
 
-var apiKey = 'API_KEY';
-var apiSecret = 'API_SECRET';
+var apiKey = 'NzQ3NjI1Y2MtYmY0Yy00YjVhLTgwYmItNjU5ZTI5YTU3Yzg2';
+var apiSecret = 'NTE2NDgwNDYtMGY4NS00M2YyLThjNTEtYWM4ZWE1N2E5NWE4';
 
 var port = 2000;
 var baseUrl = 'http://localhost:' + port;
