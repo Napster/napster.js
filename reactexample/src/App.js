@@ -1,116 +1,125 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './App.css';
 const {Napster} = window;
+
 
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      accessToken: '',
-      refreshToken: '',
-      trackList: []
+      access_token: '',
+      refresh_token: '',
+      tracks: []
     };
   }
-  //
-  // async compontentDidMount(){
-  //   await this.getVariables();
-  //   await this.initalization(this.state);
-  // }
-  //
-  // getVariables(){
-  //   var query = window.location.search.substring(1);
-  //   var variables = {};
-  //      var vars = query.split("&");
-  //      for (var i=0;i<vars.length;i++) {
-  //              var pair = vars[i].split("=");
-  //              variables[pair[0]] = pair[1];
-  //      }
-  //   this.setState({...variables});
-  // }
-  //
-  // initalization = ({accessToken, refreshToken}) => {
-  //   const APIKey = process.env.REACT_APP_API_KEY;
-  //   const SecretKey = process.env.REACT_APP_SECRET_KEY;
-  //
-  //   Napster.init({ consumerKey: 'APIKey', isHTML5Compatible: true });
-  //
-  //   Napster.player.on('ready', async (e) => {
-  //     // Uncomment to know when The Napster Player is ready
-  //     console.log('initialized');
-  //
-  //     if (accessToken) {
-  //       Napster.member.set({accessToken, refreshToken});
-  //     }
-  //   })
-  //
-  //   Napster.member.set({ accessToken, refreshToken  });
-  // }
 
-  compontentDidMount(){
+  componentDidMount() {
+    const Napster = window.Napster;
     const detail_URL = new URL(window.location);
     const currentURL = detail_URL.href;
-    const APIKey = process.env.REACT_APP_API_KEY;
-    const SecretKey = process.env.REACT_APP_SECRET_KEY;
+    const API_SECRET = 'NTE2NDgwNDYtMGY4NS00M2YyLThjNTEtYWM4ZWE1N2E5NWE4';
+    const API_KEY = 'NzQ3NjI1Y2MtYmY0Yy00YjVhLTgwYmItNjU5ZTI5YTU3Yzg2';
 
-    if(detail_URL.search === ''){
-      window.location = `https://api.napster.com/oauth/authorize?client_id=${APIKey}&redirect_uri=${currentURL}&response_type=code`;
-    } else if (detail_URL.search.includes('code')){
+    if (detail_URL.search === '') {
+      window.location = `https://api.napster.com/oauth/authorize?client_id=${API_KEY}&redirect_uri=${currentURL}&response_type=code`;
+    } else if (detail_URL.search.includes('code')) {
+      console.log(Napster);
 
-      Napster.init({ consumerKey: APIKey, isHTML5Compatible: true });
 
-      let params = new URL(window.location).searchParams;
-      const code = params.get('code');
+      Napster.init({ consumerKey: API_KEY, isHTML5Compatible: true });
 
-      fetch(`https://api.napster.com/oauth/access_token?client_id=${APIKey}&client_secret=${SecretKey}&response_type=code&grant_type=authorization_code&redirect_uri=${currentURL}&code=${code}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(result => {
-          return result.json();
-        })
-        .then(result => {
+      const code = detail_URL.search.substring(6);
+      fetch(`https://api.napster.com/oauth/access_token?client_id=${API_KEY}&client_secret=${API_SECRET}&response_type=code&grant_type=authorization_code&redirect_uri=${currentURL}&code=${code}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(result => {
+        return result.json();
+      })
+      .then(result => {
+        // console.log('Auth Token:', result.access_token, 'Refresh', result.refresh_token);
 
-          Napster.player.on('ready', function(e) {
-            Napster.member.set({
-              accessToken: result.access_token,
-              refreshToken: result.refresh_token
-            });
-          });
 
-          this.setState({
+        Napster.player.on('ready', function(e) {
+          Napster.member.set({
             accessToken: result.access_token,
             refreshToken: result.refresh_token
           });
+
+          //console.log('napster inside ready', Napster);
+        });
+
+
+        this.setState({
+          access_token: result.access_token,
+          refresh_token: result.refresh_token
+        });
+
+      })
+      .then(result => {
+        //console.log('heres nap', Napster);
+        return fetch('https://api.napster.com/v2.2/tracks/top?limit=10', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.state.access_token}`,
+            'content-type': 'application/json'
+          }
         })
-      }
+        .then(response => {
+          return response.json();
+        })
+        .then(response => {
+          response.tracks.map((track) => (
+            fetch(`https://api.napster.com/v2.2/albums/${track.albumId}/images`, {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${this.state.access_token}`,
+                'content-type': 'application/json'
+              }
+            })
+            .then(answer => {
+              return answer.json();
+            })
+            .then(answer => {
+
+              Napster.player.queue(track.id);
+
+              this.setState({ tracks: [...this.state.tracks, {id: track.id, name: track.name, artistName: track.artistName, previewURL: track.previewURL, image: answer.images[0].url}]});
+            })
+          ));
+        })
+      })
+    }
   }
 
-// imageClick(genre){
-    //generate the tracklist for the genre clicked
-//}
+  render() {
+    const songList = this.state.tracks.slice(0).reverse().map((track) => (
+      <li key={track.id} className="track" onClick={() => Napster.player.play(track.id)}>
+        <img src={track.image} alt="Album Art"></img>
+        <p className="track-name">{track.name}</p>
+        <p className="artist-name">{track.artistName}</p>
+      </li>
+    ));
 
 
-  render(){
+
     return (
-      <div>
-        <header className="welcome-box"></header>
-        <header className="welcome">Welcome!</header>
-        <header className="welcome-vector"></header>
-        <h1 className="welcome-message">Enjoy the current top hits from any genre!</h1>
-        <button className="pop-button"></button>
-        <button className="alt-button"></button>
-        <button className="country-button"></button>
-        <button className="rock-button"></button>
-        <button className="top-button"></button>
-        <button className="hip-hop-button"></button>
-        <button className="classical-button"></button>
-        <button className="kids-button"></button>
-        <button className="edm-button"></button>
-
+      <div className="App">
+        <header className="App-header">
+          <h1>Fiilpp's napster.js React App</h1>
+          <h3>Check Out Top Hits of Today!</h3>
+          <section className="Button-container">
+            <button className="Player-button" onClick={() => Napster.player.next()}>Next</button>
+            <button className="Player-button" onClick={() => Napster.player.previous()}>Previous</button>
+            <button className="Player-button" onClick={() => Napster.player.pause()}>Stop</button>
+          </section>
+          <ul className="Track-list">
+            {songList}
+          </ul>
+        </header>
       </div>
     );
   }
