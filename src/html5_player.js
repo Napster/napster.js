@@ -53,8 +53,13 @@ Html5Player.prototype.auth = function auth() {
 };
 
 
-Html5Player.prototype.play = function play(o){
-  this.streamingPlayer.play(o, { context: 'UNKNOWN'});
+Html5Player.prototype.play = function play(o, t){
+  if(typeof t == 'number') {
+    this.streamingPlayer.pause();
+    this.streamingPlayer.seek(o, t, { context: 'UNKNOWN'});
+  } else {
+    this.streamingPlayer.play(o, { context: 'UNKNOWN'});
+  }
   this.played.push(o)
   this.currentTrack = o;
   window.parent.postMessage({ type: 'playevent', data: { id: o, code: 'PlayStarted', playing: true } }, "*")
