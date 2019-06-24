@@ -48,6 +48,11 @@ Napster.player.on('ready', function(e) {
 Napster.player.play('Tra.5156528');
 ```
 
+#### Playing a track with an offset (in seconds)
+```javascript
+Napster.player.play('Tra.5156528', 40);
+```
+
 #### Pausing
 ```javascript
 Napster.player.pause();
