@@ -1,0 +1,67 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "jest": true
+    },
+    "extends": "airbnb",
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "consistent-return": "off",
+        "max-len": ["error", {
+            "code": 120,
+            "ignoreComments": true,
+            "ignoreTrailingComments": true,
+            "ignoreUrls": true,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true
+            }],
+        "no-plusplus": "off",
+        "class-methods-use-this": "off",
+        "no-else-return": "off",
+        "camelcase": "off",
+        "prefer-destructuring": "off",
+        "no-lonely-if": "off",
+        "import/no-cycle": ["error", { "maxDepth": 1 }],
+        "arrow-parens": ["error", "as-needed"],
+        "quote-props": ["error", "as-needed"],
+        "react/prop-types": ["off"],
+        "react/destructuring-assignment": ["off"],
+        "react/jsx-filename-extension": ["off"],
+        "react/jsx-no-bind": "off",
+        "jsx-quotes": ["off"],
+        "quotes": ["off"],
+        "global-require": "off",
+        "import/no-dynamic-require": "off",
+        "import/no-named-as-default": ["off"],
+        "import/no-extraneous-dependencies": ["off"],
+        "react/sort-comp": ["off"],
+        "no-param-reassign": ["off"],
+        "react/no-access-state-in-setstate": ["off"],
+        "import/extensions": ["off"],
+        "comma-dangle": ["error", {
+            "arrays": "only-multiline",
+            "objects": "only-multiline",
+            "functions": "ignore",
+            "imports": "only-multiline",
+            "exports": "only-multiline"
+        }],
+        "no-console": ["error", {
+            "allow": ["error"]
+        }]
+    }
+}
