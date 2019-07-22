@@ -1,28 +1,32 @@
-const apiKey = process.env.REACT_APP_API_KEY;
-const apiSecret = process.env.REACT_APP_SECRET_KEY;
+import { Buffer } from 'buffer'
+const apiKey = 'NjE5ODVhZmYtODFmZi00OTQwLTg0YzMtOGE5ZWYwN2E5Njhm';
+const apiSecret = 'MDMwYzM2MmEtMThmZi00YmIyLWE1ZDktY2ZiZWJlMTNkZDFk';
 const encodedCreds = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
 
-function Auth(){
+const Auth = {};
 
-}
-
-Auth.authenticate = function authenticate(spec) {
-  const { username, password } = spec;
-  const options = {
+Auth.authenticate = function authenticate(username, password) {
+  const url = "https://api.napster.com/oauth/token";
+  const spec ={
     method: 'POST',
-    uri: `${napi}/oauth/token`,
     json: true,
     resolveWithFullResponse: true,
     headers: {
+      Accept: 'application/json',
+      'content-type': 'application/json',
       Authorization: `Basic ${encodedCreds}`
     },
-    body: {
+    body: JSON.stringify({
       username,
       password,
       grant_type: 'password'
-    }
-  };
-  return rp(options);
+    })
+  }
+  return fetch(url, spec)
+    .then(result => result.json())
+    .then(result => {
+      return result;
+    })
 };
 
-module.exports = Auth;
+export default Auth;
