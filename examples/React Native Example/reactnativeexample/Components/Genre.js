@@ -2,27 +2,27 @@ import React from 'react';
 import Player from './Player';
 import GenreCalls from '../Models/GenreCalls';
 import TrackCalls from '../Models/TrackCalls';
-import {StyleSheet, Text, View, Image, ScrollView, FlatList} from 'react-native';
+import Images from '../Models/Images'
+import NavigationService from '../Models/NavigationService';
+import {StyleSheet, Text, View, Image, ScrollView, FlatList, Button, TouchableOpacity} from 'react-native';
 
 export default class Genre extends React.Component {
+  //BUTTON NOT WORKING
+  static navigationOptions = {
+    headerRight: (
+      <Button
+        onPress={() =>{ this.playerNavigate() }}
+        title="Player"
+        color="#2ca6de"
+      />
+    ),
+  };
   constructor(props) {
-
     _isMounted = false;
     super(props);
     this.state = {
       genres: [],
       tracks: [],
-      queue: [],
-      queueHolder: [],
-      selectedTrack: {},
-      playing: false,
-      shuffle: false,
-      isShowing: false,
-      currentTime: 0,
-      totalTime: 0,
-      currentTrackId: "",
-      repeat: false,
-      autoplay: true,
     };
   }
 
@@ -31,6 +31,14 @@ export default class Genre extends React.Component {
 
     this.loadGenres(this.props.navigation.state.params.access_token);
     // Napster = window.Napster;
+  }
+
+  // BUTTON IS NOT WORKING
+  playerNavigate(){
+    if(this.state.tracks){
+      const {navigate} = this.props.navigation;
+      NavigationService.navigate('Player', { tracks: tracks });
+    }
   }
 
   loadGenres(token) {
@@ -51,26 +59,18 @@ export default class Genre extends React.Component {
         if (this.state.tracks !== tracks) {
           this.setState({ tracks });
         }
+        const {navigate} = this.props.navigation;
+        NavigationService.navigate('Player', { tracks: tracks });
       })
       .catch(err => Error(err, "Loading Tracks"));
   }
 
   render() {
     const genreList = this.state.genres.map(genre => (
-      <View key={genre.id} styles={styles.container} onPress={() => { this.chooseTrackList(this.props.navigation.state.params.access_token, genre.id); }}>
-        <Image source={require(`../genreimages/g.115.jpg`)} style={styles.genreImage}/>
+      <TouchableOpacity key={genre.id} style={styles.container} onPress={() => { this.chooseTrackList(this.props.navigation.state.params.access_token, genre.id); }}>
+        <Image source={Images[genre.id]} style={styles.genreImage}/>
         <Text style={styles.genreText}>{genre.name.toUpperCase()}</Text>
-      </View>
-    ));
-
-    const trackList = this.state.tracks.map(track => (
-      <View role="button" id="track" styles={styles.container} key={track.id}>
-        <Image source={`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg`} alt="Album Art" />
-        <View>
-          <Text><strong>{track.name}</strong></Text>
-          <Text>{track.artistName}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     ));
 
     return (

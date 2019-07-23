@@ -22,17 +22,15 @@ export default class Login extends React.Component {
   validateLogin = (email, password) => {
     return Auth.authenticate(email, password)
       .then(result => {
-        console.log(result)
         if (result.access_token) {
           if (this.state.access_token !== result.access_token) {
             this.setState({ access_token: result.access_token });
           }
-
+        alert("Login Successful!")
         const {navigate} = this.props.navigation;
         NavigationService.navigate('Genre', { access_token: this.state.access_token });
         } else {
-          // TODO: alert saying failed (Use result.message)
-          console.log(result.message);
+          alert(result.message)
         }
       })
       .catch(err => Error(err, "Trouble Getting Token"));
