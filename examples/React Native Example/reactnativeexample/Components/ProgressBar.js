@@ -1,8 +1,9 @@
 import React from 'react';
 import { Slider } from 'react-native-elements';
-import {StyleSheet, Text, View, Image, ScrollView} from 'react-native';
+import { styles } from '../Styles/ProgressBar.styles.js'
+import { Text, View, Image, ScrollView} from 'react-native';
 
-let Napster;
+// let Napster;
 
 export default class ProgressBar extends React.Component {
   constructor(props) {
@@ -13,7 +14,7 @@ export default class ProgressBar extends React.Component {
   }
 
   calculateTotalValue(track) {
-    if (track.type === "track") {
+    if (this.props.selectedTrack && track.type === "track") {
       const length = track.playbackSeconds;
       const minutes = Math.floor(length / 60);
       let seconds = track.playbackSeconds % 60;
@@ -27,7 +28,7 @@ export default class ProgressBar extends React.Component {
   }
 
   normalizeTime = t => {
-    if (this.props.selectedTrack.type === "track") {
+    if (this.props.selectedTrack && this.props.selectedTrack.type === "track") {
       if (t === undefined) {
         return "0:00";
       } else {
@@ -47,7 +48,7 @@ export default class ProgressBar extends React.Component {
 
   seek = event => {
     if (this.props.playing) {
-      if (this.props.selectedTrack.type === "track") {
+      if (this.props.selectedTrack && this.props.selectedTrack.type === "track") {
         //Napster.player.seek(event.target.value);
         return event.target.value;
       }
@@ -65,17 +66,3 @@ export default class ProgressBar extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container:{
-    backgroundColor: '#000000',
-  },
-  barText:{
-    fontSize: 14,
-    color: '#ffffff',
-  },
-  thumbSlider: {
-    paddingVertical: 10,
-    backgroundColor: '#B7D5E7',
-  }
-});

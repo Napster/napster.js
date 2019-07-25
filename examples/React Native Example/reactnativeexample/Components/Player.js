@@ -2,94 +2,66 @@ import React from 'react';
 import ProgressBar from './ProgressBar';
 import { Icon } from 'react-native-elements';
 import NavigationService from '../Models/NavigationService';
-import {StyleSheet, Text, View, Image, ScrollView, FlatList, TouchableOpacity, Button} from 'react-native';
+import { styles } from '../Styles/Player.styles.js'
+import { Text, View, Image, ScrollView, FlatList, TouchableOpacity, Button } from 'react-native';
 
-export default class Genre extends React.Component {
+export default class Player extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerRight: (
+        <Button
+          onPress={ navigation.getParam('handleSwitch') }
+          title="Genres"
+          color="#2ca6de"
+        />
+      ),
+    };
+  };
+
   constructor(props) {
     super(props);
     this.state = {
-      queue: [],
-      queueHolder: [],
-      selectedTrack: {},
-      playing: false,
-      shuffle: false,
-      isShowing: false,
-      currentTime: 0,
-      totalTime: 0,
-      currentTrackId: "",
-      repeat: false,
-      autoplay: true,
     };
   }
 
-  select(track) {
-    this.setState({ selectedTrack: track }, () => {
-      console.log(this.state.selectedTrack)
-      // Napster.player.play(track.id);
-      this.isPlaying(true);
-      this.setState({ currentTrackId: track.id });
-      const inQueue = this.state.queue.find(tr => track.id === tr.id);
-      if (!inQueue) {
-        this.setState({ queueHolder: this.props.navigation.state.params.tracks });
-        this.setState({ queue: this.props.navigation.state.params.tracks }, () => {
-          if (this.state.shuffle) {
-            const shuffledQueue = [...this.state.queue].sort(() => Math.random() - 0.5);
-            this.setState({ queue: shuffledQueue });
-          }
-        });
-      }
-    });
+  componentDidMount() {
+    this.props.navigation.setParams({
+      handleSwitch: this.playerNavigate,
+      select: () => this.select,
+      isPlaying: () => this.isPlaying,
+      currentTrack: () => this.currentTrack,
+      isShuffled: () => this.isShuffled,
+      updateQueue: () => this.updateQueue,
+      songMovement: () => this.songMovement,
+      songRepeat: () => this.songRepeat,
+      trackAutoplay: () => this.trackAutoplay,
+      showQueue: () => this.showQueue
+     });
   }
 
-  isPlaying = cmd => {
-    this.setState({ playing: cmd });
-    if (cmd === true) {
-      // Napster.player.on('playtimer', e => {
-      //   this.setState({
-      //     currentTime: e.data.currentTime,
-      //     totalTime: e.data.totalTime
-      //   });
-        if (this.state.repeat) {
-          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
-            // Napster.player.play(this.state.selectedTrack.id);
-          }
-        }
-        if (this.state.autoplay) {
-          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
-            const index = this.state.queue.map(q => q.id).indexOf(this.state.selectedTrack.id);
-            if (index !== 9) {
-              this.setState({ selectedTrack: this.state.queue[index + 1] });
-              this.setState({ currentTrackId: this.state.selectedTrack.id});
-              // Napster.player.play(this.state.queue[index + 1].id);
-            } else {
-              this.setState({ selectedTrack: this.state.queue[0] });
-              this.setState({ currentTrackId: this.state.selectedTrack.id });
-              // Napster.player.play(this.state.queue[0].id);
-            }
-          }
-        }
-      // });
-    }
+  playerNavigate = () => {
+    const { navigate } = this.props.navigation;
+    NavigationService.navigate('Genre');
   }
 
   playPauseResume(track) {
-    if (track.type === "track") {
-      if (this.state.currentTrackId === track.id.toLowerCase()) {
-        if (this.state.playing === false) {
-          this.isPlaying(true);
-          //Napster.player.resume(track.id);
-        } else if (this.state.playing === true) {
-          this.isPlaying(false);
-          //Napster.player.pause();
+    if (this.props.navigation.state.params.selectedTrack && track.type === "track") {
+      if (this.props.navigation.state.params.currentTrackId === track.id.toLowerCase()) {
+        if (this.props.navigation.state.params.playing === false) {
+          this.props.isPlaying(true);
+          // Napster.player.resume(track.id);
+        } else if (this.props.navigation.state.params.playing === true) {
+          this.props.isPlaying(false);
+          // Napster.player.pause();
         }
       } else {
-        if (this.state.playing === true) {
-          this.isPlaying(false);
-          //Napster.player.pause();
+        if (this.props.navigation.state.params.playing === true) {
+          this.props.isPlaying(false);
+          // Napster.player.pause();
         } else {
-          this.setState({ currentTrackId: track.id });
-          this.isPlaying(true);
-          //Napster.player.play(track.id);
+          this.props.currentTrack(track.id);
+          this.props.isPlaying(true);
+          // Napster.player.play(track.id);
         }
       }
     } else {
@@ -98,14 +70,14 @@ export default class Genre extends React.Component {
   }
 
   shuffle(trackList) {
-    if (this.state.selectedTrack.type === "track") {
-      if (this.state.shuffle === false) {
+    if (this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.type === "track") {
+      if (this.props.navigation.state.params.shuffle === false) {
         const shuffledQueue = [...trackList].sort(() => Math.random() - 0.5);
-        this.setState({ shuffle: true });
-        this.setState({ queue: shuffledQueue });
+        this.props.isShuffled(true);
+        this.props.updateQueue(shuffledQueue);
       } else {
-        this.setState({ shuffle: false });
-        this.setState({ queue: this.state.queueHolder });
+        this.props.isShuffled(false);
+        this.props.updateQueue(this.props.navigation.state.params.queueHolder);
       }
     } else {
       return '';
@@ -113,28 +85,28 @@ export default class Genre extends React.Component {
   }
 
   nextPrev(cmd, track) {
-    if (track.type === "track") {
-      const index = this.state.queue.map(e => e.id).indexOf(track.id);
+    if (this.props.navigation.state.params.selectedTrack && track.type === "track") {
+      const index = this.props.navigation.state.params.queue.map(e => e.id).indexOf(track.id);
       if (cmd === "next") {
         if (index !== 9) {
-          this.setState({selectedTrack: this.state.queue[index + 1] });
-          this.isPlaying(true);
-          this.setState({ currentTrackId: track.id });
-          //Napster.player.play(this.state.queue[index + 1].id);
+          this.props.songMovement(this.props.navigation.state.params.queue[index + 1]);
+          this.props.isPlaying(true);
+          this.props.currentTrack(track.id);
+          // Napster.player.play(this.props.queue[index + 1].id);
         } else {
-          this.setState({selectedTrack: this.state.queue[0] });
-          this.isPlaying(true);
-          this.setState({ currentTrackId: track.id });
-          //Napster.player.play(this.state.queue[0].id);
+          this.props.songMovement(this.props.navigation.state.params.queue[0]);
+          this.props.isPlaying(true);
+          this.props.currentTrack(track.id);
+          // Napster.player.play(this.props.queue[0].id);
         }
       } else if (cmd === "prev") {
         if (index !== 0) {
-          this.setState({selectedTrack: this.state.queue[index - 1]});
-          this.isPlaying(true);
-          this.setState({ currentTrackId: track.id });
-          //Napster.player.play(this.state.queue[index - 1].id);
+          this.props.songMovement(this.props.navigation.state.params.queue[index - 1]);
+          this.props.isPlaying(true);
+          this.props.currentTrack(track.id);
+          // Napster.player.play(this.props.queue[index - 1].id);
         } else {
-          //Napster.player.play(this.state.selectedTrack.id);
+          // Napster.player.play(this.props.selectedTrack.id);
         }
       }
     } else {
@@ -143,48 +115,38 @@ export default class Genre extends React.Component {
   }
 
   repeat() {
-    if (this.state.repeat === false) {
-      this.setState({ repeat: true });
-      this.setState({ autoplay: false });
+    if (this.props.navigation.state.params.repeat === false) {
+      this.props.songRepeat(true);
+      this.props.trackAutoplay(false);
     } else {
-      this.setState({ repeat: false });
-      this.setState({ autoplay: true });
+      this.props.songRepeat(false);
+      this.props.trackAutoplay(true);
     }
   }
 
-  showQueue = () => {
-    if (this.state.selectedTrack.type === "track") {
-      if (this.state.isShowing === false) {
-        this.setState({ isShowing: true });
-      } else {
-        this.setState({ isShowing: false });
-      }
-    } else {
-      return "";
-    }
-  }
 
   render() {
+    console.log(this.props.navigation.getParam('select')(this.props.navigation.state.params.selectedTrack))
     const trackList = this.props.navigation.state.params.tracks.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.select(track); }}>
-          <Image style={styles.genreImage} source={{uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg`}}/>
+        <TouchableOpacity style={styles.container} onPress={() => { this.props.navigation.getParam('select')(track); }}>
+          <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.genreText}>{track.name}</Text>
-          <Text style={styles.genreText}>{track.artistName}</Text>
+        <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>
+          <Text style={styles.text}>{track.name}</Text>
+          <Text style={styles.text}>{track.artistName}</Text>
         </TouchableOpacity>
       </View>
     ));
 
-    const queueList = this.state.queue.map(track => (
+    const queueList = this.props.navigation.state.params.queue.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.select(track); }}>
-          <Image style={styles.genreImage} source={{uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg`}}/>
+        <TouchableOpacity style={styles.container} onPress={() => { this.props.navigation.getParam('select')(track); }}>
+          <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.genreText}>{track.name}</Text>
-          <Text style={styles.genreText}>{track.artistName}</Text>
+        <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>
+          <Text style={styles.text}>{track.name}</Text>
+          <Text style={styles.text}>{track.artistName}</Text>
         </TouchableOpacity>
       </View>
     ));
@@ -192,11 +154,11 @@ export default class Genre extends React.Component {
     const select = (
       <View style={styles.trackContainer}>
         <View style={styles.container}>
-          <Image style={styles.trackImage} source={{uri:`https://api.napster.com/imageserver/v2/albums/${this.state.selectedTrack.albumId}/images/500x500.jpg`}}/>
+          <Image style={styles.trackImage} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.albumId}/images/500x500.jpg` }} />
         </View>
         <View>
-          <Text style={styles.track}>{this.state.selectedTrack.name}</Text>
-          <Text style={styles.track}>{this.state.selectedTrack.artistName}</Text>
+          <Text style={styles.track}>{this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.name}</Text>
+          <Text style={styles.track}>{this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.artistName}</Text>
         </View>
       </View>
     );
@@ -204,7 +166,7 @@ export default class Genre extends React.Component {
     const imgPlaceHolder = (
       <View style={styles.trackContainer}>
         <View style={styles.container}>
-          <Image style={styles.trackImage} source={{uri:"https://www.logolynx.com/images/logolynx/63/63b7e09aff8bbe832d22c752c4bef080.jpeg"}}/>
+          <Image style={styles.trackImage} source={{ uri:"https://www.logolynx.com/images/logolynx/63/63b7e09aff8bbe832d22c752c4bef080.jpeg" }} />
         </View>
         <View>
           <Text style={styles.track}>Track</Text>
@@ -214,62 +176,23 @@ export default class Genre extends React.Component {
     );
 
     return (
-      <ScrollView>
+      <ScrollView style={styles.color}>
         <View>
-          {this.state.selectedTrack.type === "track" ? (<View>{select}</View>) : (<View>{imgPlaceHolder}</View>)}
-          <ProgressBar currentTime={this.state.currentTime} totalTime={this.state.totalTime} selectedTrack={this.state.selectedTrack}/>
+          {this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.type === "track" ? (<View>{select}</View>) : (<View>{imgPlaceHolder}</View>)}
+          <ProgressBar {...this.props.navigation.state.params} />
           <View style={styles.buttonContainer}>
-            <Icon name='repeat' type='font-awesome' color={this.state.repeat ? '#ffffff' : '#517fa4'} onPress={() => this.repeat()}/>
-            <Icon name='reorder' type='font-awesome' color={this.state.isShowing ? '#ffffff' : '#517fa4'} onPress={() => this.showQueue() }/>
-            <Icon name='step-backward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("prev", this.state.selectedTrack); }}/>
-            <Icon name={this.state.playing ? "pause" : "play"} type='font-awesome' color='#517fa4' onPress={() => { this.playPauseResume(this.state.selectedTrack); }}/>
-            <Icon name='step-forward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("next", this.state.selectedTrack); }}/>
-            <Icon name='random' type='font-awesome' color={this.state.shuffle ? '#ffffff' : '#517fa4'} onPress={() => { this.shuffle(this.state.queue); }}/>
+            <Icon name='repeat' type='font-awesome' color={this.props.navigation.state.params.repeat ? '#ffffff' : '#517fa4'} onPress={() => this.repeat()}/>
+            <Icon name='reorder' type='font-awesome' color={this.props.navigation.state.params.isShowing ? '#ffffff' : '#517fa4'} onPress={() => this.props.showQueue() }/>
+            <Icon name='step-backward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("prev", this.props.navigation.state.params.selectedTrack); }}/>
+            <Icon name={this.props.navigation.state.params.playing ? "pause" : "play"} type='font-awesome' color='#517fa4' onPress={() => { this.playPauseResume(this.props.navigation.state.params.selectedTrack); }}/>
+            <Icon name='step-forward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("next", this.props.navigation.state.params.selectedTrack); }}/>
+            <Icon name='random' type='font-awesome' color={this.props.navigation.state.params.shuffle ? '#ffffff' : '#517fa4'} onPress={() => { this.shuffle(this.props.navigation.state.params.queue); }}/>
           </View>
         </View>
-        <View style={styles.container}>
-          {this.state.isShowing ? (<View>{queueList}</View>) : (<View>{trackList}</View>)}
+        <View>
+          {this.props.navigation.state.params.isShowing ? (<View>{queueList}</View>) : (<View>{trackList}</View>)}
         </View>
       </ScrollView>
     );
   }
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    alignItems: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  trackContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#000000',
-  },
-  track: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#ffffff',
-  },
-  genreImage: {
-    width: 60,
-    height: 60,
-  },
-  genreText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#ffffff',
-  },
-  trackImage: {
-    width: 125,
-    height: 125
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
-    paddingHorizontal: 12,
-  }
-});
