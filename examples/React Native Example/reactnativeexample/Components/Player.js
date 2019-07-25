@@ -25,17 +25,11 @@ export default class Player extends React.Component {
   }
 
   componentDidMount() {
+    const { state, setParams, navigate } = this.props.navigation;
+    const params = state.params || {};
+
     this.props.navigation.setParams({
       handleSwitch: this.playerNavigate,
-      select: () => this.select,
-      isPlaying: () => this.isPlaying,
-      currentTrack: () => this.currentTrack,
-      isShuffled: () => this.isShuffled,
-      updateQueue: () => this.updateQueue,
-      songMovement: () => this.songMovement,
-      songRepeat: () => this.songRepeat,
-      trackAutoplay: () => this.trackAutoplay,
-      showQueue: () => this.showQueue
      });
   }
 
@@ -124,12 +118,17 @@ export default class Player extends React.Component {
     }
   }
 
+  trackSelected = (track) => {
+    this.props.navigation.state.params.select(track)
+    this.forceUpdate();
+  }
+
 
   render() {
-    console.log(this.props.navigation.getParam('select')(this.props.navigation.state.params.selectedTrack))
+    console.log(this.props.navigation.state.params.selectedTrack, "132")
     const trackList = this.props.navigation.state.params.tracks.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.props.navigation.getParam('select')(track); }}>
+        <TouchableOpacity style={styles.container} onPress={() => { this.trackSelected(track) }}>
           <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>
@@ -141,7 +140,7 @@ export default class Player extends React.Component {
 
     const queueList = this.props.navigation.state.params.queue.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.props.navigation.getParam('select')(track); }}>
+        <TouchableOpacity style={styles.container} onPress={() => { params.select(track); }}>
           <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>

@@ -28,7 +28,7 @@ export default class Genre extends React.Component {
       tracks: [],
       queue: [],
       queueHolder: [],
-      selectedTrack: null,
+      selectedTrack: {},
       playing: false,
       shuffle: false,
       isShowing: false,
@@ -90,15 +90,15 @@ export default class Genre extends React.Component {
         const { navigate } = this.props.navigation;
         NavigationService.navigate('Player', {
            ...this.state,
-           select: () => this.select,
-           isPlaying: () => this.isPlaying,
-           currentTrack: () => this.currentTrack,
-           isShuffled: () => this.isShuffled,
-           updateQueue: () => this.updateQueue,
-           songMovement: () => this.songMovement,
-           songRepeat: () => this.songRepeat,
-           trackAutoplay: () => this.trackAutoplay,
-           showQueue: () => this.showQueue
+           select: this.select,
+           isPlaying: this.isPlaying,
+           currentTrack: this.currentTrack,
+           isShuffled: this.isShuffled,
+           updateQueue: this.updateQueue,
+           songMovement: this.songMovement,
+           songRepeat: this.songRepeat,
+           trackAutoplay: this.trackAutoplay,
+           showQueue: this.showQueue
         });
       })
       .catch(err => Error(err, "Loading Tracks"));
@@ -106,7 +106,7 @@ export default class Genre extends React.Component {
 
   select = (track) => {
     this.setState({ selectedTrack: track }, () => {
-      console.log(this.state.selectedTrack)
+      console.log(this.state.selectedTrack, "122")
       // Napster.player.play(track.id);
       this.isPlaying(true);
       this.setState({ currentTrackId: track.id });
@@ -188,19 +188,6 @@ export default class Genre extends React.Component {
 
     return (
       <ScrollView>
-        <Player
-           {...this.state}
-           select={this.select}
-           isPlaying={this.isPlaying}
-           currentTrack={this.currentTrack}
-           isShuffled={this.isShuffled}
-           updateQueue={this.updateQueue}
-           songMovement={this.songMovement}
-           songRepeat={this.songRepeat}
-           trackAutoplay={this.trackAutoplay}
-           showQueue={this.showQueue}
-        });
-        />
         <View style={styles.container}>
           <Text style={styles.welcomeText}>WELCOME</Text>
           <Text style={styles.messageText}>Select any genre to start listening!</Text>
