@@ -21,6 +21,17 @@ export default class Player extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      queue: [],
+      queueHolder: [],
+      selectedTrack: {},
+      playing: false,
+      shuffle: false,
+      isShowing: false,
+      currentTime: 0,
+      totalTime: 0,
+      currentTrackId: "",
+      repeat: false,
+      autoplay: true,
     };
   }
 
@@ -39,22 +50,22 @@ export default class Player extends React.Component {
   }
 
   playPauseResume(track) {
-    if (this.props.navigation.state.params.selectedTrack && track.type === "track") {
-      if (this.props.navigation.state.params.currentTrackId === track.id.toLowerCase()) {
-        if (this.props.navigation.state.params.playing === false) {
-          this.props.isPlaying(true);
+    if (this.state.selectedTrack && track.type === "track") {
+      if (this.state.currentTrackId === track.id.toLowerCase()) {
+        if (this.state.playing === false) {
+          this.isPlaying(true);
           // Napster.player.resume(track.id);
-        } else if (this.props.navigation.state.params.playing === true) {
-          this.props.isPlaying(false);
+        } else if (this.state.playing === true) {
+          this.isPlaying(false);
           // Napster.player.pause();
         }
       } else {
-        if (this.props.navigation.state.params.playing === true) {
-          this.props.isPlaying(false);
+        if (this.state.playing === true) {
+          this.isPlaying(false);
           // Napster.player.pause();
         } else {
-          this.props.currentTrack(track.id);
-          this.props.isPlaying(true);
+          this.currentTrack(track.id);
+          this.isPlaying(true);
           // Napster.player.play(track.id);
         }
       }
@@ -64,14 +75,14 @@ export default class Player extends React.Component {
   }
 
   shuffle(trackList) {
-    if (this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.type === "track") {
-      if (this.props.navigation.state.params.shuffle === false) {
+    if (this.state.selectedTrack.type === "track") {
+      if (this.state.shuffle === false) {
         const shuffledQueue = [...trackList].sort(() => Math.random() - 0.5);
-        this.props.isShuffled(true);
-        this.props.updateQueue(shuffledQueue);
+        this.isShuffled(true);
+        this.updateQueue(shuffledQueue);
       } else {
-        this.props.isShuffled(false);
-        this.props.updateQueue(this.props.navigation.state.params.queueHolder);
+        this.isShuffled(false);
+        this.updateQueue(this.props.navigation.state.params.queueHolder);
       }
     } else {
       return '';
@@ -79,25 +90,25 @@ export default class Player extends React.Component {
   }
 
   nextPrev(cmd, track) {
-    if (this.props.navigation.state.params.selectedTrack && track.type === "track") {
-      const index = this.props.navigation.state.params.queue.map(e => e.id).indexOf(track.id);
+    if (track.type === "track") {
+      const index = this.state.queue.map(e => e.id).indexOf(track.id);
       if (cmd === "next") {
         if (index !== 9) {
-          this.props.songMovement(this.props.navigation.state.params.queue[index + 1]);
-          this.props.isPlaying(true);
-          this.props.currentTrack(track.id);
+          this.songMovement(this.state.queue[index + 1]);
+          this.isPlaying(true);
+          this.currentTrack(track.id);
           // Napster.player.play(this.props.queue[index + 1].id);
         } else {
-          this.props.songMovement(this.props.navigation.state.params.queue[0]);
-          this.props.isPlaying(true);
-          this.props.currentTrack(track.id);
+          this.songMovement(this.state.queue[0]);
+          this.isPlaying(true);
+          this.currentTrack(track.id);
           // Napster.player.play(this.props.queue[0].id);
         }
       } else if (cmd === "prev") {
         if (index !== 0) {
-          this.props.songMovement(this.props.navigation.state.params.queue[index - 1]);
-          this.props.isPlaying(true);
-          this.props.currentTrack(track.id);
+          this.songMovement(this.state.queue[index - 1]);
+          this.isPlaying(true);
+          this.currentTrack(track.id);
           // Napster.player.play(this.props.queue[index - 1].id);
         } else {
           // Napster.player.play(this.props.selectedTrack.id);
@@ -109,41 +120,108 @@ export default class Player extends React.Component {
   }
 
   repeat() {
-    if (this.props.navigation.state.params.repeat === false) {
-      this.props.songRepeat(true);
-      this.props.trackAutoplay(false);
+    if (this.state.repeat === false) {
+      this.songRepeat(true);
+      this.trackAutoplay(false);
     } else {
-      this.props.songRepeat(false);
-      this.props.trackAutoplay(true);
+      this.songRepeat(false);
+      this.trackAutoplay(true);
     }
   }
 
-  trackSelected = (track) => {
-    this.props.navigation.state.params.select(track)
-    this.forceUpdate();
+  select = (track) => {
+    this.setState({ selectedTrack: track }, () => {
+      // Napster.player.play(track.id);
+      this.isPlaying(true);
+      this.setState({ currentTrackId: track.id });
+      const inQueue = this.state.queue.find(tr => track.id === tr.id);
+      if (!inQueue) {
+        this.setState({ queueHolder: this.state.tracks });
+        this.setState({ queue: this.state.tracks }, () => {
+          if (this.state.shuffle) {
+            const shuffledQueue = [...this.state.queue].sort(() => Math.random() - 0.5);
+            this.setState({ queue: shuffledQueue });
+          }
+        });
+      }
+    });
+  }
+
+  isPlaying = cmd => {
+    this.setState({ playing: cmd });
+    if (cmd === true) {
+      // Napster.player.on('playtimer', e => {
+      //   this.setState({
+      //     currentTime: e.data.currentTime,
+      //     totalTime: e.data.totalTime
+      //   });
+        if (this.state.repeat) {
+          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
+            // Napster.player.play(this.state.selectedTrack.id);
+          }
+        }
+        if (this.state.autoplay) {
+          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
+            const index = this.state.queue.map(q => q.id).indexOf(this.state.selectedTrack.id);
+            if (index !== 9) {
+              this.setState({ selectedTrack: this.state.queue[index + 1] });
+              this.setState({ currentTrackId: this.state.selectedTrack.id});
+              // Napster.player.play(this.state.queue[index + 1].id);
+            } else {
+              this.setState({ selectedTrack: this.state.queue[0] });
+              this.setState({ currentTrackId: this.state.selectedTrack.id });
+              // Napster.player.play(this.state.queue[0].id);
+            }
+          }
+        }
+      // });
+    }
+  }
+
+  currentTrack = id => { this.setState({ currentTrackId: id }); }
+
+  isShuffled = cmd => { this.setState({ shuffle: cmd }); }
+
+  updateQueue = newQueue => { this.setState({ queue: newQueue }); }
+
+  songMovement = index => { this.setState({ selectedTrack: index }); }
+
+  songRepeat = cmd => { this.setState({ repeat: cmd }); }
+
+  trackAutoplay = cmd => { this.setState({ autoplay: cmd }); }
+
+  showQueue = () => {
+    if (this.state.selectedTrack.type === "track") {
+      if (this.state.isShowing === false) {
+        this.setState({ isShowing: true });
+      } else {
+        this.setState({ isShowing: false });
+      }
+    } else {
+      return "";
+    }
   }
 
 
   render() {
-    console.log(this.props.navigation.state.params.selectedTrack, "132")
     const trackList = this.props.navigation.state.params.tracks.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.trackSelected(track) }}>
+        <TouchableOpacity style={styles.container} onPress={() => { this.select(track) }}>
           <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>
+        <TouchableOpacity onPress={() => { this.select(track); }}>
           <Text style={styles.text}>{track.name}</Text>
           <Text style={styles.text}>{track.artistName}</Text>
         </TouchableOpacity>
       </View>
     ));
 
-    const queueList = this.props.navigation.state.params.queue.map(track => (
+    const queueList = this.state.queue.map(track => (
       <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { params.select(track); }}>
+        <TouchableOpacity style={styles.container} onPress={() => { this.select(track); }}>
           <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => { this.props.navigation.getParam('select')(track); }}>
+        <TouchableOpacity onPress={() => { this.select(track); }}>
           <Text style={styles.text}>{track.name}</Text>
           <Text style={styles.text}>{track.artistName}</Text>
         </TouchableOpacity>
@@ -153,11 +231,11 @@ export default class Player extends React.Component {
     const select = (
       <View style={styles.trackContainer}>
         <View style={styles.container}>
-          <Image style={styles.trackImage} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.albumId}/images/500x500.jpg` }} />
+          <Image style={styles.trackImage} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${this.state.selectedTrack.albumId}/images/500x500.jpg` }} />
         </View>
         <View>
-          <Text style={styles.track}>{this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.name}</Text>
-          <Text style={styles.track}>{this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.artistName}</Text>
+          <Text style={styles.track}>{this.state.selectedTrack.name}</Text>
+          <Text style={styles.track}>{this.state.selectedTrack.artistName}</Text>
         </View>
       </View>
     );
@@ -177,19 +255,19 @@ export default class Player extends React.Component {
     return (
       <ScrollView style={styles.color}>
         <View>
-          {this.props.navigation.state.params.selectedTrack && this.props.navigation.state.params.selectedTrack.type === "track" ? (<View>{select}</View>) : (<View>{imgPlaceHolder}</View>)}
-          <ProgressBar {...this.props.navigation.state.params} />
+          {this.state.selectedTrack.type === "track" ? (<View>{select}</View>) : (<View>{imgPlaceHolder}</View>)}
+          <ProgressBar {...this.state} />
           <View style={styles.buttonContainer}>
-            <Icon name='repeat' type='font-awesome' color={this.props.navigation.state.params.repeat ? '#ffffff' : '#517fa4'} onPress={() => this.repeat()}/>
-            <Icon name='reorder' type='font-awesome' color={this.props.navigation.state.params.isShowing ? '#ffffff' : '#517fa4'} onPress={() => this.props.showQueue() }/>
-            <Icon name='step-backward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("prev", this.props.navigation.state.params.selectedTrack); }}/>
-            <Icon name={this.props.navigation.state.params.playing ? "pause" : "play"} type='font-awesome' color='#517fa4' onPress={() => { this.playPauseResume(this.props.navigation.state.params.selectedTrack); }}/>
-            <Icon name='step-forward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("next", this.props.navigation.state.params.selectedTrack); }}/>
-            <Icon name='random' type='font-awesome' color={this.props.navigation.state.params.shuffle ? '#ffffff' : '#517fa4'} onPress={() => { this.shuffle(this.props.navigation.state.params.queue); }}/>
+            <Icon name='repeat' type='font-awesome' color={this.state.repeat ? '#ffffff' : '#517fa4'} onPress={() => this.repeat()}/>
+            <Icon name='reorder' type='font-awesome' color={this.state.isShowing ? '#ffffff' : '#517fa4'} onPress={() => this.showQueue() }/>
+            <Icon name='step-backward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("prev", this.state.selectedTrack); }}/>
+            <Icon name={this.state.playing ? "pause" : "play"} type='font-awesome' color='#517fa4' onPress={() => { this.playPauseResume(this.state.selectedTrack); }}/>
+            <Icon name='step-forward' type='font-awesome' color='#517fa4' onPress={() => { this.nextPrev("next", this.state.selectedTrack); }}/>
+            <Icon name='random' type='font-awesome' color={this.state.shuffle ? '#ffffff' : '#517fa4'} onPress={() => { this.shuffle(this.state.queue); }}/>
           </View>
         </View>
         <View>
-          {this.props.navigation.state.params.isShowing ? (<View>{queueList}</View>) : (<View>{trackList}</View>)}
+          {this.state.isShowing ? (<View>{queueList}</View>) : (<View>{trackList}</View>)}
         </View>
       </ScrollView>
     );
