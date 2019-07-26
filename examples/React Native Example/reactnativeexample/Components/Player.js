@@ -28,7 +28,7 @@ export default class Player extends React.Component {
       shuffle: false,
       isShowing: false,
       currentTime: 0,
-      totalTime: 0,
+      totalTime: 10,
       currentTrackId: "",
       repeat: false,
       autoplay: true,
@@ -36,9 +36,6 @@ export default class Player extends React.Component {
   }
 
   componentDidMount() {
-    const { state, setParams, navigate } = this.props.navigation;
-    const params = state.params || {};
-
     this.props.navigation.setParams({
       handleSwitch: this.playerNavigate,
      });
@@ -50,7 +47,7 @@ export default class Player extends React.Component {
   }
 
   playPauseResume(track) {
-    if (this.state.selectedTrack && track.type === "track") {
+    if (track.type === "track") {
       if (this.state.currentTrackId === track.id.toLowerCase()) {
         if (this.state.playing === false) {
           this.isPlaying(true);
@@ -82,7 +79,7 @@ export default class Player extends React.Component {
         this.updateQueue(shuffledQueue);
       } else {
         this.isShuffled(false);
-        this.updateQueue(this.props.navigation.state.params.queueHolder);
+        this.updateQueue(this.state.queueHolder);
       }
     } else {
       return '';
@@ -131,13 +128,18 @@ export default class Player extends React.Component {
 
   select = (track) => {
     this.setState({ selectedTrack: track }, () => {
+      console.log(this.state.selectedTrack)
       // Napster.player.play(track.id);
       this.isPlaying(true);
       this.setState({ currentTrackId: track.id });
       const inQueue = this.state.queue.find(tr => track.id === tr.id);
+      console.log(inQueue)
       if (!inQueue) {
-        this.setState({ queueHolder: this.state.tracks });
-        this.setState({ queue: this.state.tracks }, () => {
+        console.log("Hi")
+        this.setState({ queueHolder: this.props.navigation.state.params.tracks });
+        console.log(this.state.queueHolder)
+        this.setState({ queue: this.props.navigation.state.params.tracks }, () => {
+        //console.log(this.state.queue)
           if (this.state.shuffle) {
             const shuffledQueue = [...this.state.queue].sort(() => Math.random() - 0.5);
             this.setState({ queue: shuffledQueue });
@@ -151,10 +153,10 @@ export default class Player extends React.Component {
     this.setState({ playing: cmd });
     if (cmd === true) {
       // Napster.player.on('playtimer', e => {
-      //   this.setState({
-      //     currentTime: e.data.currentTime,
-      //     totalTime: e.data.totalTime
-      //   });
+        this.setState({
+          currentTime: 0,
+          totalTime: this.state.selectedTrack.playbackSeconds
+        });
         if (this.state.repeat) {
           if (Math.floor(this.state.currentTime) === this.state.totalTime) {
             // Napster.player.play(this.state.selectedTrack.id);
