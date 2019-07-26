@@ -1,10 +1,15 @@
 import { StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
+  selectContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    alignItems: 'flex-start',
+    /*alignItems: 'flex-start',*/
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
@@ -14,12 +19,19 @@ const styles = StyleSheet.create({
   trackContainer: {
     flexDirection: 'row',
     backgroundColor: '#000000',
+    alignItems: 'center',
   },
   track: {
     fontSize: 18,
     fontWeight: '500',
     color: '#ffffff',
-    alignSelf: 'flex-start'
+    /*alignSelf: 'flex-start'*/
+  },
+  queue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
+    alignSelf: 'center'
   },
   image: {
     width: 60,

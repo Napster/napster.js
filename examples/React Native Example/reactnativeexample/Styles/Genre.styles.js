@@ -6,6 +6,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  color: {
+    backgroundColor: '#000000',
+  },
   genreText: {
     fontSize: 18,
     fontWeight: '500',
@@ -28,4 +31,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export { styles } 
+export { styles }
