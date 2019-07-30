@@ -5,7 +5,7 @@ import TrackCalls from '../Models/TrackCalls';
 import Images from '../Models/Images'
 import NavigationService from '../Models/NavigationService';
 import { styles } from '../Styles/Genre.styles.js'
-import { Text, View, Image, ScrollView, FlatList, Button, TouchableOpacity } from 'react-native';
+import { Text, View, Image, ScrollView, FlatList, Button, TouchableOpacity, BackHandler } from 'react-native';
 
 export default class Genre extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -47,7 +47,18 @@ export default class Genre extends React.Component {
 
     this.loadGenres(this.props.navigation.state.params.access_token);
     this.props.navigation.setParams({ handleSwitch: this.playerNavigate, genrePage: this.state.genrePage });
+
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+
     // Napster = window.Napster;
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton() {
+    return true;
   }
 
 
