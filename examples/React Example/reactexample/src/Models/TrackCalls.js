@@ -1,7 +1,7 @@
 const TrackCalls = {};
 
 TrackCalls.getTracks = function getTracks(access_token, genre) {
-  const url = `https://api.napster.com/v2.2/genres/${genre}/tracks/top?limit=10`;
+  const url = `https://api.napster.com/v2.2/genres/${genre}/tracks/top?limit=10&isStreamableOnly=true`;
   return fetch(url, {
     method: 'GET',
     headers: {

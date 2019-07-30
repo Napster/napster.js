@@ -94,21 +94,25 @@ export default class Player extends React.Component {
 
   render() {
     const trackList = this.props.tracks.map(track => (
-      <TouchableOpacity style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.props.select(track) }}>
-          <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
-          <Text style={styles.queue}>{track.name}</Text>
-          <Text style={styles.queue}>{track.artistName}</Text>
+      <TouchableOpacity style={styles.container} key={track.id} >
+        <TouchableOpacity style={styles.topContainer} onPress={() => { this.props.select(track) }}>
+          <Image style={styles.img} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
+          <View style={styles.wrap}>
+            <Text style={styles.trackName}>{track.name}</Text>
+            <Text style={styles.artist}>{track.artistName}</Text>
+          </View>
         </TouchableOpacity>
       </TouchableOpacity>
     ));
 
     const queueList = this.props.queue.map(track => (
-      <View style={styles.trackContainer} key={track.id} >
-        <TouchableOpacity style={styles.container} onPress={() => { this.props.select(track); }}>
-          <Image style={styles.image} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
-          <Text style={styles.text}>{track.name}</Text>
-          <Text style={styles.text}>{track.artistName}</Text>
+      <View style={styles.container} key={track.id} >
+        <TouchableOpacity style={styles.topContainer} onPress={() => { this.props.select(track) }}>
+          <Image style={styles.img} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${track.albumId}/images/500x500.jpg` }} />
+          <View style={styles.wrap}>
+            <Text style={styles.trackName}>{track.name}</Text>
+            <Text style={styles.artist}>{track.artistName}</Text>
+          </View>
         </TouchableOpacity>
       </View>
     ));
@@ -117,8 +121,8 @@ export default class Player extends React.Component {
       <View style={styles.trackContainer}>
         <View style={styles.selectContainer}>
           <Image style={styles.trackImage} source={{ uri:`https://api.napster.com/imageserver/v2/albums/${this.props.selectedTrack && this.props.selectedTrack.albumId}/images/500x500.jpg` }} />
-          <Text style={styles.track}>{this.props.selectedTrack && this.props.selectedTrack.name}</Text>
-          <Text style={styles.track}>{this.props.selectedTrack && this.props.selectedTrack.artistName}</Text>
+          <Text style={styles.selectedTrackName}>{this.props.selectedTrack && this.props.selectedTrack.name}</Text>
+          <Text style={styles.selectedTrackArtist}>{this.props.selectedTrack && this.props.selectedTrack.artistName}</Text>
         </View>
       </View>
     );
@@ -127,8 +131,8 @@ export default class Player extends React.Component {
       <View style={styles.trackContainer}>
         <View style={styles.selectContainer}>
           <Image style={styles.trackImage} source={{ uri:"https://www.logolynx.com/images/logolynx/63/63b7e09aff8bbe832d22c752c4bef080.jpeg" }} />
-          <Text style={styles.track}>Track</Text>
-          <Text style={styles.track}>Artist</Text>
+          <Text style={styles.selectedTrackName}>Track</Text>
+          <Text style={styles.selectedTrackArtist}>Artist</Text>
         </View>
       </View>
     );

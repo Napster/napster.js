@@ -13,7 +13,7 @@ export default class Genre extends React.Component {
       headerRight: (
         <Button
           onPress={ navigation.getParam('handleSwitch') }
-          title={"Switch"}
+          title={"Player"}
           color="#2ca6de"
         />
       ),
@@ -46,7 +46,7 @@ export default class Genre extends React.Component {
     this._isMounted = true;
 
     this.loadGenres(this.props.navigation.state.params.access_token);
-    this.props.navigation.setParams({ handleSwitch: this.playerNavigate, checkPage: this.checkPage });
+    this.props.navigation.setParams({ handleSwitch: this.playerNavigate, genrePage: this.state.genrePage });
     // Napster = window.Napster;
   }
 
@@ -56,14 +56,6 @@ export default class Genre extends React.Component {
       this.setState({ genrePage: false });
     }else{
       this.setState({ genrePage: true });
-    }
-  }
-
-  checkPage = () => {
-    if(this.state.genrePage) {
-      return true
-    }else{
-      return false
     }
   }
 
@@ -86,20 +78,6 @@ export default class Genre extends React.Component {
           this.setState({ tracks });
         }
         this.setState({ genrePage: false });
-        // const { navigate } = this.props.navigation;
-        // NavigationService.navigate('Player', {
-        //   tracks: this.state.tracks
-        //    // ...this.state,
-        //    // select: this.select,
-        //    // isPlaying: this.isPlaying,
-        //    // currentTrack: this.currentTrack,
-        //    // isShuffled: this.isShuffled,
-        //    // updateQueue: this.updateQueue,
-        //    // songMovement: this.songMovement,
-        //    // songRepeat: this.songRepeat,
-        //    // trackAutoplay: this.trackAutoplay,
-        //    // showQueue: this.showQueue
-        // });
       })
       .catch(err => Error(err, "Loading Tracks"));
   }
@@ -165,8 +143,6 @@ export default class Genre extends React.Component {
 
   trackAutoplay = cmd => { this.setState({ autoplay: cmd }); }
 
-  setPage = cmd => { this.setState({ genrePage: cmd }); }
-
   showQueue = () => {
     if (this.state.selectedTrack.type === "track") {
       if (this.state.isShowing === false) {
@@ -220,7 +196,6 @@ export default class Genre extends React.Component {
         songRepeat={this.songRepeat}
         repeat={this.state.repeat}
         trackAutoplay={this.trackAutoplay}
-        setPage={this.setPage}
         select={this.select}
         />)}
       </View>

@@ -6,40 +6,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    /*alignItems: 'flex-start',*/
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
   color: {
     backgroundColor: '#000000',
   },
-  trackContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#000000',
-    alignItems: 'center',
-  },
-  track: {
-    fontSize: 18,
-    fontWeight: '500',
+  selectedTrackName: {
+    alignSelf: 'center',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#ffffff',
-    /*alignSelf: 'flex-start'*/
   },
-  queue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#ffffff',
-    alignSelf: 'center'
-  },
-  image: {
-    width: 60,
-    height: 60,
-  },
-  text: {
-    fontSize: 14,
-    fontWeight: '500',
+  selectedTrackArtist: {
+    alignSelf: 'center',
+    fontSize: 16,
     color: '#ffffff',
   },
   trackImage: {
@@ -52,6 +30,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#000000',
     paddingHorizontal: 12,
+  },
+  container: {
+    backgroundColor: "black",
+    marginBottom: 10
+  },
+  topContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
+  img: {
+    width: 60,
+    height: 60,
+    marginLeft: 5
+  },
+  trackName: {
+    marginLeft: 5,
+    fontWeight: "600",
+    color: "white"
+  },
+  artist: {
+    color: "white",
+    marginLeft: 5
+  },
+  queue: {
+    alignSelf: 'center',
+    fontWeight: "500",
+    fontSize: 14,
+    color: "white"
+  },
+  wrap: {
+    flexWrap: "wrap",
   },
 });
 
