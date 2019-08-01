@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+}
+
+#parent {
+  display: flex;
+}
+#narrow {
+  width: 450px;
+  background: black;
+  border-right: 20px solid grey;
+}
+
+#wide {
+  flex: 1;
+  background: white;
+  text-align: center;
+}
