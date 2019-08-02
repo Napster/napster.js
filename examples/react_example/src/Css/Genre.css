@@ -1,0 +1,35 @@
+.genre-btn {
+  background-color: transparent;
+  cursor: pointer;
+  display: inline-block;
+  width: 20%;
+  height: 100px;
+}
+
+.genre-btn img{
+  object-fit: scale-down;
+  width: 200px;
+  height: 100px;
+  padding: none;
+  padding-top: 10px;
+}
+
+.genre-btn h3{
+  text-align: center;
+  color: #2ca6de;
+  font-size: 12px;
+}
+
+.header{
+  font-style: normal;
+  font-weight: bold;
+  font-size: 45px;
+  color: #2ca6de;
+}
+
+.message{
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  color: #2ca6de;
+}

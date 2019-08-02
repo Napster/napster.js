@@ -1,0 +1,56 @@
+.player-btn {
+  background-color: black;
+  border: 2px solid white;
+  color: white;
+  padding: 12px 16px;
+  font-size:16px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.player-toggle {
+  background-color: #2ca6de;
+  border: 2px solid white;
+  color: white;
+  padding: 12px 16px;
+  font-size:16px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.select {
+  display: flex;
+  color: white;
+}
+
+.select img {
+  margin-left: 25px;
+  margin-bottom: 3px;
+  display: block;
+  object-fit: scale-down;
+  width: 140px;
+  height: 140px;
+}
+
+.select h3 {
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 20px;
+}
+
+.select p {
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 15px;
+}
+
+.demobox {
+  background-color: black;
+  position: relative;
+  padding-left: 10px;
+  border: 5px solid black;
+  width: 430px;
+  height: 275px;
+  font-size: 14px;
+  text-align: center;
+}
