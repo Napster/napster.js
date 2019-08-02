@@ -1,6 +1,6 @@
 .genre-btn {
   background-color: transparent;
-  cursor: default;
+  cursor: pointer;
   display: inline-block;
   width: 20%;
   height: 100px;
