@@ -123,7 +123,7 @@ If you'd like to contribute to the development of this SDK:
 
 + Fork the repo
 + Make your changes in `src/napster.js`
-+ Test thoroughly and ensure the [Example App](https://github.com/Napster/napster.js/tree/master/example) functions properly with your changes.
++ Test thoroughly and ensure the [Example Apps](https://github.com/Napster/napster.js/tree/master/examples) functions properly with your changes.
 + Submit a pull request.
 
 ## License
