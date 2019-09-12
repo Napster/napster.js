@@ -33,3 +33,26 @@
   font-size: 20px;
   color: #2ca6de;
 }
+
+#errorDiv {
+  color: white;
+  background: #FF9B39;
+  width: 80%;
+  border-radius: 5px;
+  text-align: center;
+  position: relative;
+  margin: auto;
+  margin-bottom: 20px;
+  padding: 5px;
+}
+
+#errorBtn {
+  cursor: pointer;
+  position: relative;
+  background: #222;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  color: white;
+  margin: 10px auto auto auto;
+}

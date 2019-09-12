@@ -41,7 +41,6 @@ export default class App extends React.Component {
             });
           });
 
-
           this.setState({
             access_token: result.access_token,
           });

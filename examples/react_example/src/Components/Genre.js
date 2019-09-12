@@ -22,12 +22,43 @@ export default class Genre extends React.Component {
       currentTrackId: "",
       repeat: false,
       autoplay: true,
+      sessionError: false
     };
   }
 
   componentDidMount() {
     this.loadGenres(this.props.token);
     Napster = window.Napster;
+    Napster.player.on('playsessionexpired', () => {
+      this.isPlaying(false);
+      Napster.player.pause();
+      this.setState({ currentTime: 0, sessionError: true });
+    });
+    Napster.player.on('playtimer', e => {
+      this.setState({
+        currentTime: e.data.currentTime,
+        totalTime: e.data.totalTime
+      });
+      if (this.state.repeat) {
+        if (Math.floor(this.state.currentTime) === this.state.totalTime) {
+          Napster.player.play(this.state.selectedTrack.id);
+        }
+      }
+      if (this.state.autoplay && Object.keys(this.state.selectedTrack).length !== 0) {
+        if (Math.floor(this.state.currentTime) === this.state.totalTime) {
+          const index = this.state.queue.map(q => q.id).indexOf(this.state.selectedTrack.id);
+          if (index !== 9) {
+            this.songMovement(this.state.queue[index + 1]);
+            this.currentTrack(this.state.selectedTrack.id);
+            Napster.player.play(this.state.queue[index + 1].id);
+          } else {
+            this.songMovement(this.state.queue[0]);
+            this.currentTrack(this.state.selectedTrack.id);
+            Napster.player.play(this.state.queue[0].id);
+          }
+        }
+      }
+    });
   }
 
   loadGenres(token) {
@@ -51,7 +82,7 @@ export default class Genre extends React.Component {
   }
 
   select(track) {
-    this.setState({ selectedTrack: track }, () => {
+    this.setState({ selectedTrack: track, sessionError: false }, () => {
       Napster.player.play(track.id);
       this.isPlaying(true);
       this.setState({ currentTrackId: track.id });
@@ -70,33 +101,6 @@ export default class Genre extends React.Component {
 
   isPlaying = cmd => {
     this.setState({ playing: cmd });
-    if (cmd === true) {
-      Napster.player.on('playtimer', e => {
-        this.setState({
-          currentTime: e.data.currentTime,
-          totalTime: e.data.totalTime
-        });
-        if (this.state.repeat) {
-          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
-            Napster.player.play(this.state.selectedTrack.id);
-          }
-        }
-        if (this.state.autoplay) {
-          if (Math.floor(this.state.currentTime) === this.state.totalTime) {
-            const index = this.state.queue.map(q => q.id).indexOf(this.state.selectedTrack.id);
-            if (index !== 9) {
-              this.songMovement(this.state.queue[index + 1]);
-              this.currentTrack(this.state.selectedTrack.id);
-              Napster.player.play(this.state.queue[index + 1].id);
-            } else {
-              this.songMovement(this.state.queue[0]);
-              this.currentTrack(this.state.selectedTrack.id);
-              Napster.player.play(this.state.queue[0].id);
-            }
-          }
-        }
-      });
-    }
   }
 
   currentTrack = id => { this.setState({ currentTrackId: id }); }
@@ -175,6 +179,10 @@ export default class Genre extends React.Component {
             repeat={this.state.repeat}
             trackAutoplay={this.trackAutoplay}
           />
+          <div id='errorDiv' hidden={!this.state.sessionError}>
+            Playback session expired by another client
+            <button type='button' id='errorBtn' onClick={() => { this.select(this.state.selectedTrack); }}>Continue</button>
+          </div>
           {this.state.isShowing && (
             <div align="center" id="queue">
               <p className="queue">Your Queue</p>

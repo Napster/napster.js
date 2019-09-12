@@ -30,6 +30,7 @@ describe('<Genre/>', () => {
     wrapper = shallow(
       <Genre />
     );
+    wrapper.setState({ selectedTrack: tracks });
   });
 
   it('should render without crashing', () => {
@@ -97,7 +98,7 @@ describe('<Genre/>', () => {
   describe('IsPlaying', () => {
     const currentTime = 5;
     const totalTime = 5;
-    it('should turn repeat on', () => {
+    it('switch playing state', () => {
       wrapper.setState({
         selectedTrack: tracks,
         queue,
@@ -106,27 +107,9 @@ describe('<Genre/>', () => {
         repeat: true,
         autoplay: false
       });
-      expect(wrapper.state('repeat')).toBe(true);
-      expect(wrapper.state('selectedTrack')).toBe(tracks);
       expect(wrapper.state('playing')).toBe(false);
       wrapper.find('Player').props().isPlaying(true);
       expect(wrapper.state('playing')).toBe(true);
-    });
-
-    it('should turn autoplay on', () => {
-      wrapper.setState({
-        selectedTrack: tracks,
-        queue,
-        currentTime,
-        totalTime,
-        repeat: false
-      });
-      expect(wrapper.state('selectedTrack')).toBe(tracks);
-      expect(wrapper.state('playing')).toBe(false);
-      wrapper.find('Player').props().isPlaying(true);
-      expect(wrapper.state('playing')).toBe(true);
-      expect(wrapper.state('selectedTrack')).toBe(queue[1]);
-      expect(wrapper.state('currentTrackId')).toBe("1357");
     });
   });
 
@@ -150,9 +133,9 @@ describe('<Genre/>', () => {
     });
 
     it('should change the state of selectedTrack', () => {
-      expect(wrapper.state('selectedTrack')).toEqual({});
-      wrapper.find('Player').props().songMovement(tracks);
-      expect(wrapper.state('selectedTrack')).toBe(tracks);
+      expect(wrapper.state('selectedTrack')).toEqual(tracks);
+      wrapper.find('Player').props().songMovement(queue[0]);
+      expect(wrapper.state('selectedTrack')).toBe(queue[0]);
     });
 
     it('should change the state of repeat', () => {
