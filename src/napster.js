@@ -122,7 +122,7 @@
           $("<video-js id='napster-streaming-player' class='video-js' playsinline></video-js>").appendTo($(document.body));
           $("#napster-streaming-player").css("display","none");
           $.ajax({
-            url: 'https://api.napster.com/v2/streaming-player.js',
+            url: 'https://app.napster.com/sdk/streaming-player-1.0.1.js',
             dataType: 'script',
             async: true,
             success: function () {
